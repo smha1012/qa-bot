@@ -24,7 +24,7 @@ if "langsmith_client" not in st.session_state:
     st.session_state["langsmith_client"] = Client()
 
 st.set_page_config(
-    page_title="Surfee - 보드 AI 어시스턴트 💬",
+    page_title="Surfee - 보드 AI 질의 응답 챗봇 💬",
     page_icon="💬",
     layout="wide",
     initial_sidebar_state="expanded",
@@ -34,7 +34,7 @@ st.title("Surfee - 보드 AI 어시스턴트 💬")
 st.markdown("**보드**의 소통 내용을 기반으로 답변하는 봇입니다. ")
 
 with st.sidebar:
-    st.markdown("🧑‍💻 Seungmin, Ha ")
+    st.markdown("🧑‍💻 이걸 만든사람: Seungmin, Ha ")
     st.markdown(
         "✅ [Surfee](https://surfee.io)"
     )
