@@ -191,13 +191,14 @@ if user_input:
 
     # AI 답변을 화면에 표시
     with st.chat_message("assistant", avatar="😊"):
-        # streamlit_container = st.empty()
+        streamlit_container = st.empty()
         # 그래프를 호출하여 응답 생성
         response = stream_graph(
             graph,
             user_input,
-            streamlit_container=st.empty(),
+            streamlit_container,
             thread_id=st.session_state["thread_id"],
+            config={"configurable": {"session": session}}
         )
 
         # 응답에서 AI 답변 추출
