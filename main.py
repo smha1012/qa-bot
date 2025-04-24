@@ -6,6 +6,7 @@ from streamlit_wrapper import create_graph, stream_graph
 from langchain_teddynote import logging
 from langsmith import Client
 from langchain_core.messages import HumanMessage, AIMessage
+from langchain_core.runnables import RunnableConfig
 from langchain_teddynote.messages import random_uuid
 
 load_dotenv()
@@ -18,6 +19,11 @@ logging.langsmith(LANGSMITH_PROJECT)
 
 
 NAMESPACE = "langchain"
+
+config = RunnableConfig(
+    recursion_limit=9,
+    configurable={"thread_id": st.session_state["thread_id"]}
+)
 
 # LangSmith 클라이언트를 세션 상태에 저장합니다.
 if "langsmith_client" not in st.session_state:
@@ -198,7 +204,7 @@ if user_input:
             user_input,
             streamlit_container,
             thread_id=st.session_state["thread_id"],
-            config={"configurable": {"session": session}}
+            config=config
         )
 
         # 응답에서 AI 답변 추출
