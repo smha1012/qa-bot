@@ -26,7 +26,7 @@ def init_retriever(db_index="LANGCHAIN_DB_INDEX", fetch_k=30, top_n=8):
     )
     '''
 
-    compressor = FlashrankRerank(model="ms-marco-MiniLM-L-12-v2", top_n=top_n)
+    compressor = FlashrankRerank(model="ms-marco-MiniLM-L-12-v2", top_n=3)
     compression_retriever = ContextualCompressionRetriever(
         base_compressor=compressor,
         base_retriever=code_retriever
