@@ -20,11 +20,6 @@ logging.langsmith(LANGSMITH_PROJECT)
 
 NAMESPACE = "langchain"
 
-config = RunnableConfig(
-    recursion_limit=9,
-    configurable={"thread_id": st.session_state["thread_id"]}
-)
-
 # LangSmith 클라이언트를 세션 상태에 저장합니다.
 if "langsmith_client" not in st.session_state:
     st.session_state["langsmith_client"] = Client()
@@ -198,6 +193,12 @@ if user_input:
     # AI 답변을 화면에 표시
     with st.chat_message("assistant", avatar="😊"):
         streamlit_container = st.empty()
+
+        config = RunnableConfig(
+            recursion_limit=9,
+            configurable={"thread_id": st.session_state["thread_id"]}
+        )
+        
         # 그래프를 호출하여 응답 생성
         response = stream_graph(
             graph,
