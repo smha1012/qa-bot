@@ -35,6 +35,7 @@ st.markdown("**보드**의 소통 내용을 기반으로 답변하는 봇입니�
 
 with st.sidebar:
     st.markdown("🧑‍💻 이걸 만든사람: Seungmin, Ha ")
+    st.markdown("🌸 Knowledge Base: [langgraph  repo](https://github.com/langchain-ai/langgraph)")
     st.markdown(
         "✅ [Surfee](https://surfee.io)"
     )
