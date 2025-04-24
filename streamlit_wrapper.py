@@ -82,7 +82,7 @@ def stream_graph(
     config = RunnableConfig(recursion_limit=9, configurable={"thread_id": thread_id})
 
     # AgentState 객체를 활용하여 질문을 입력합니다.
-    inputs = GraphState(question=query)
+    inputs = GraphState(question=query, generation="", documents=[])
 
     # app.stream을 통해 입력된 메시지에 대한 출력을 스트리밍합니다.
     actions = {
