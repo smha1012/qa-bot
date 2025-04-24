@@ -79,7 +79,7 @@ def stream_graph(
     streamlit_container,
     thread_id: str,
 ):
-    config = RunnableConfig(recursion_limit=30, configurable={"thread_id": thread_id})
+    config = RunnableConfig(recursion_limit=9, configurable={"thread_id": thread_id})
 
     # AgentState 객체를 활용하여 질문을 입력합니다.
     inputs = GraphState(question=query)
