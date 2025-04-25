@@ -71,8 +71,8 @@ class RetrieveNode(BaseNode):
     def execute(self, state: GraphState) -> GraphState:
         question = state["question"]
         documents = self.retriever.invoke(question)
-        return GraphState(documents=documents)
-
+        #return GraphState(documents=documents)
+        return GraphState(documents=[doc.page_content for doc in documents])
 
 class GeneralAnswerNode(BaseNode):
     def __init__(self, llm, **kwargs):
@@ -104,7 +104,7 @@ class FilteringDocumentsNode(BaseNode):
         super().__init__(**kwargs)
         self.name = "FilteringDocumentsNode"
         self.retrieval_grader = create_retrieval_grader_chain()
-
+    '''
     def execute(self, state: GraphState) -> GraphState:
         question = state["question"]
         documents = state["documents"]
@@ -118,6 +118,19 @@ class FilteringDocumentsNode(BaseNode):
                 filtered_docs.append(d)
 
         return GraphState(documents=filtered_docs)
+    '''
+    def execute(self, state: GraphState) -> GraphState:
+        question = state["question"]
+        documents = state["documents"]
+    
+        filtered_docs = []
+        for d in documents:
+            # d는 이미 str이라고 가정 (아니면 doc.page_content → d로 바꿔야 함)
+            score = self.retrieval_grader.invoke({"question": question, "document": d})
+            if score.binary_score == "yes":
+                filtered_docs.append(d)
+    
+        return GraphState(documents=filtered_docs)  # 이때 documents는 List[str]
 
 
 class WebSearchNode(BaseNode):
@@ -126,6 +139,7 @@ class WebSearchNode(BaseNode):
         self.name = "WebSearchNode"
         self.web_search_tool = create_web_search_tool()
 
+    '''
     def execute(self, state: GraphState) -> GraphState:
         question = state["question"]
         web_results = self.web_search_tool.invoke({"query": question})
@@ -137,6 +151,18 @@ class WebSearchNode(BaseNode):
             for web_result in web_results
         ]
         return GraphState(documents=web_results_docs)
+    '''
+    def execute(self, state: GraphState) -> GraphState:
+        question = state["question"]
+        web_results = self.web_search_tool.invoke({"query": question})
+        
+        web_contents = [
+            web_result["content"]
+            for web_result in web_results
+            if "content" in web_result
+        ]
+    
+        return GraphState(documents=web_contents)  # List[str]
 
 
 class AnswerGroundednessCheckNode(BaseNode):
