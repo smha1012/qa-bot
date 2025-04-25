@@ -16,3 +16,4 @@ class GraphState(TypedDict):
     question: Annotated[str, "User question"]
     generation: Annotated[str, "LLM generated answer"]
     documents: Annotated[List[str], "List of documents"]
+    rewrite_count: Annotated[int, "Number of rewrites"]
