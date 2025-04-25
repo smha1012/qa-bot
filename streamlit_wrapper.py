@@ -8,20 +8,11 @@ from retrievers import init_retriever
 from states import GraphState
 from rag import create_rag_chain
 from nodes import *
-import ormsgpack
 
 
 DB_INDEX = "LANGCHAIN_DB_INDEX"
 
 
-def safe_serialize(value):
-    try:
-        ormsgpack.packb(value)
-        return True
-    except Exception as e:
-        st.warning(f"⚠️ 직렬화 불가 객체 감지됨: {type(value)} → 제거됨")
-        return False
-        
 def create_graph():
     retriever = init_retriever()
     # 문서 검색 체인 생성
@@ -88,10 +79,18 @@ def stream_graph(
     streamlit_container,
     thread_id: str,
 ):
-    config = RunnableConfig(recursion_limit=9, configurable={"thread_id": thread_id})
+    config = RunnableConfig(recursion_limit=10, configurable={"thread_id": thread_id})
 
     # AgentState 객체를 활용하여 질문을 입력합니다.
-    inputs = GraphState(question=query, generation="", documents=[])
+    '''
+    inputs = GraphState(question=query)
+    '''
+    inputs = GraphState(
+        question=query,
+        generation="",
+        documents=[],
+        rewrite_count=0  # 무한루프 방지를 위한 재귀 횟수
+    )
 
     # app.stream을 통해 입력된 메시지에 대한 출력을 스트리밍합니다.
     actions = {
@@ -111,8 +110,6 @@ def stream_graph(
             for output in app.stream(inputs, config=config):
                 # 출력된 결과에서 키와 값을 순회합니다.
                 for key, value in output.items():
-                    if not safe_serialize(value):
-                        continue  # 직렬화 불가 객체 건너뛰기
                     # 노드의 이름과 해당 노드에서 나온 출력을 출력합니다.
                     if key in actions:
                         st.write(actions[key])
@@ -120,14 +117,4 @@ def stream_graph(
             status.update(label="답변 완료", state="complete", expanded=False)
     except GraphRecursionError as e:
         print(f"Recursion limit reached: {e}")
-    #return app.get_state(config={"configurable": {"thread_id": thread_id}}).values
-
-    state = app.get_state(config={"configurable": {"thread_id": thread_id}}).values
-
-    # 안전 필터링
-    safe_state = {
-        k: v for k, v in state.items()
-        if isinstance(v, (str, int, float, list, dict, type(None)))
-    }
-    
-    return safe_state
+    return app.get_state(config={"configurable": {"thread_id": thread_id}}).values
